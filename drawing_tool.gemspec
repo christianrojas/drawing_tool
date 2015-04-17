@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = DrawingTool::VERSION
   spec.authors       = ["Christian Rojas"]
   spec.email         = ["christianrojasgar@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Drawing Tool - Coding Challenge.}
+  spec.description   = %q{Simple console version of a drawing program.}
+  spec.homepage      = "https://github.com/christianrojas/drawing_tool"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -20,4 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "thor", "~> 0.19.1"
+  spec.add_development_dependency "rspec", "~> 3.2.0"
+
 end

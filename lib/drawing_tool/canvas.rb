@@ -1,3 +1,5 @@
+require 'byebug'
+
 module DrawingTool
   class Canvas
     attr_accessor :width, :height, :positions
@@ -20,7 +22,29 @@ module DrawingTool
       end
     end
 
-    def add_line(x1, y1, x2, y2); end
+    # Add a new line to the canvas with the given
+    # positions
+    # 
+    # @param x1 [Integer]
+    # @param y1 [Integer]
+    # @param x2 [Integer]
+    # @param y2 [Integer]
+    def add_line(x1, y1, x2, y2)
+      if y1 == y2
+        if x1 < x2 # left -> right
+          (x1..x2).each { |x| get_position(x, y1)[:v] = 'x' }
+        else # rigth -> left
+          x1.downto(x2) { |x| get_position(x, y1)[:v] = 'x' }
+        end
+      else
+        if y1 < y2 # top -> bottom
+          (y1..y2).each { |y| get_position(x1, y)[:v] = 'x' }
+        else # bottom -> top
+          y1.downto(y2) { |y| get_position(x1, y)[:v] = 'x' }
+        end
+      end
+    end
+
     def add_rectangle(x1, y1, x2, y2); end
     def bucket_fill_area(x, y, c); end
 
@@ -53,6 +77,17 @@ module DrawingTool
       (@width+2).times { print '-' }
       puts
       puts "\nDimensions: width: #{@width} x height: #{@height}"
+    end
+
+    # Add a new line to the canvas with the given
+    # positions
+    # 
+    # @param x [Integer] position in the canvas
+    # @param y [Integer] position in the canvas
+    #
+    # @return [Hash] with position
+    def get_position(x, y)
+      @positions.find {|hash| hash[:x] == x && hash[:y] == y }
     end
   end
 end

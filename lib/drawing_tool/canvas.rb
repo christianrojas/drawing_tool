@@ -6,7 +6,7 @@ module DrawingTool
     #
     # @param width [Integer] of the canvas
     # @param height [Integer] of the canvas
-    def initialize width, height
+    def initialize(width, height)
       @width     = width
       @height    = height
       @positions = []
@@ -15,14 +15,18 @@ module DrawingTool
       # and adds to @positions array
       @height.times do |y|
         @width.times do |x|
-          @positions.push({:x => x+1, :y => y+1, :s => nil})
+          @positions.push({:x => x+1, :y => y+1, :v => nil})
         end
       end
     end
 
+    def add_line(x1, y1, x2, y2); end
+    def add_rectangle(x1, y1, x2, y2); end
+    def bucket_fill_area(x, y, c); end
+
     def draw
       # Prints canvas dimensions
-      puts "Canvas dimensions: Width: #{@width}, Height: #{@height}"
+      puts "\nCanvas"
 
       # Prints top margin of the canvas
       (@width+2).times { print '-' }
@@ -36,7 +40,7 @@ module DrawingTool
 
         # Prints row content for every position
         @width.times do |y|
-          print @positions[index][:s].nil? ? ' ' : @positions[index][:s]
+          print @positions[index][:v].nil? ? ' ' : @positions[index][:v]
           index += 1
         end
 
@@ -48,6 +52,7 @@ module DrawingTool
       # Prints bottom margin of the canvas
       (@width+2).times { print '-' }
       puts
+      puts "\nDimensions: width: #{@width} x height: #{@height}"
     end
   end
 end

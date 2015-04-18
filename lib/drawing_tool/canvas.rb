@@ -45,7 +45,16 @@ module DrawingTool
       end
     end
 
-    def add_rectangle(x1, y1, x2, y2); end
+    def add_rectangle(x1, y1, x2, y2)
+      # Vertical lines
+      add_line(x1, y1, x2, y1)
+      add_line(x1, y2, x2, y2)
+
+      # Horizontal lines
+      add_line(x1, y1, x1, y2)
+      add_line(x2, y1, x2, y2)
+    end
+
     def bucket_fill_area(x, y, c); end
 
     def draw

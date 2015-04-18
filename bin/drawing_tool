@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby -U
+
+require 'drawing_tool'
+
+DrawingTool::Cli.start( ARGV )

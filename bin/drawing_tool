@@ -2,4 +2,4 @@
 
 require 'drawing_tool'
 
-DrawingTool::Cli.start( ARGV )
+DrawingTool::Cli.start(ARGV)

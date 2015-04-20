@@ -1,10 +1,13 @@
-require 'thor'
 require 'byebug'
 
 module DrawingTool
-  class Canvas < Thor
-    # attr_accessor :width, :height, :positions
-
+  #
+  # Class Canvas provides provides functionality to all 
+  # commands used in the canvas
+  #
+  # @author Christian Rojas <christianrojasgar@gmail.com>
+  #
+  class Canvas
     # Initialize a canvas object
     #
     # @param width [Integer] of the canvas
@@ -18,7 +21,7 @@ module DrawingTool
       # and adds to @positions array
       @height.times do |y|
         @width.times do |x|
-          @positions.push({:x => x+1, :y => y+1, :v => nil})
+          @positions.push({ x: x+1, y: y+1, v: nil })
         end
       end
     end
@@ -38,12 +41,14 @@ module DrawingTool
         else # rigth -> left
           x1.downto(x2) { |x| draw_position(x, y1) }
         end
-      else
+      elsif x1 == x2
         if y1 < y2 # top -> bottom
           (y1..y2).each { |y| draw_position(x1, y) }
         else # bottom -> top
           y1.downto(y2) { |y| draw_position(x1, y) }
         end
+      else
+        raise ArgumentError
       end
     end
 
@@ -58,46 +63,29 @@ module DrawingTool
     end
 
     def bucket_fill_area(x, y, c)
-      
-      if ( x >= 1 && x <= @width) && (y >= 1 && y <= @height )
+      @colour = c
+      if (x >= 1 && x <= @width) && (y >= 1 && y <= @height)
         base_position = get_position(x, y)
       
-        if base_position[:v] == nil
-          # Change the nil value to c
-          base_position[:v] = set_color("b", :blue)
+        if base_position[:v].nil?
+          base_position[:v] = @colour
 
-          rows = [ base_position ]
-          
-          rows.each do |row|
-            if (row[:y] - 1) >= 1 # Top
-              top_position = get_position(row[:x], row[:y]-1)
-              rows << top_position if top_position[:v] == nil
-              # Change the nil value to c
-              top_position[:v] = set_color("b", :blue) if top_position[:v] == nil
-            end
-
-            if (row[:x] + 1) <= @width
-              right_position = get_position(row[:x]+1, row[:y])
-              rows << right_position if right_position[:v] == nil
-              # Change the nil value to c
-              right_position[:v] = set_color("b", :blue) if right_position[:v] == nil
-            end
-
-            if (row[:y] + 1) <= @height
-              bottom_position = get_position(row[:x], row[:y]+1)
-              rows << bottom_position if bottom_position[:v] == nil
-              # Change the nil value to c
-              bottom_position[:v] = set_color("b", :blue) if bottom_position[:v] == nil
-            end
-
-            if (row[:x] - 1) >= 1
-              left_position = get_position(row[:x]-1, row[:y])
-              rows << left_position if left_position[:v] == nil
-              # Change the nil value to c
-              left_position[:v] = set_color("b", :blue) if left_position[:v] == nil
-            end
+          @rows = [base_position]
+          @rows.each do |row|
+            position(row[:x], row[:y] - 1) if (row[:y] - 1) >= 1
+            position(row[:x] + 1, row[:y]) if (row[:x] + 1) <= @width
+            position(row[:x], row[:y] + 1) if (row[:y] + 1) <= @height
+            position(row[:x] - 1, row[:y]) if (row[:x] - 1) >= 1
           end
         end
+      end
+    end
+
+    def position(x, y)
+      position = get_position(x, y)
+      if position[:v].nil?
+        @rows << position 
+        position[:v] = @colour # Change the nil value to c
       end
     end
 
@@ -105,12 +93,22 @@ module DrawingTool
       get_position(x, y)[:v] = c
     end
 
+
+    #
+    # Draw an 'x' in the given positions
+    #
+    # @param [Integer] x position
+    # @param [Integer] y position
+    #
+    # @return [void]
+    # 
     def draw_position(x, y)
       # Get the position and add the key :v
       get_position(x, y)[:v] = 'x'
     end
 
     def draw
+
       # Prints canvas dimensions
       puts "\nCanvas"
 
@@ -148,7 +146,7 @@ module DrawingTool
     #
     # @return [Hash] with position
     def get_position(x, y)
-      @positions.find {|hash| hash[:x] == x && hash[:y] == y }
+      @positions.find { |hash| hash[:x] == x && hash[:y] == y }
     end
   end
 end

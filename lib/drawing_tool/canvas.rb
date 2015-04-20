@@ -1,8 +1,9 @@
+require 'thor'
 require 'byebug'
 
 module DrawingTool
-  class Canvas
-    attr_accessor :width, :height, :positions
+  class Canvas < Thor
+    # attr_accessor :width, :height, :positions
 
     # Initialize a canvas object
     #
@@ -29,18 +30,19 @@ module DrawingTool
     # @param y1 [Integer]
     # @param x2 [Integer]
     # @param y2 [Integer]
+    # TODO: Refactoring
     def add_line(x1, y1, x2, y2)
       if y1 == y2
         if x1 < x2 # left -> right
-          (x1..x2).each { |x| get_position(x, y1)[:v] = 'x' }
+          (x1..x2).each { |x| draw_position(x, y1) }
         else # rigth -> left
-          x1.downto(x2) { |x| get_position(x, y1)[:v] = 'x' }
+          x1.downto(x2) { |x| draw_position(x, y1) }
         end
       else
         if y1 < y2 # top -> bottom
-          (y1..y2).each { |y| get_position(x1, y)[:v] = 'x' }
+          (y1..y2).each { |y| draw_position(x1, y) }
         else # bottom -> top
-          y1.downto(y2) { |y| get_position(x1, y)[:v] = 'x' }
+          y1.downto(y2) { |y| draw_position(x1, y) }
         end
       end
     end
@@ -55,7 +57,58 @@ module DrawingTool
       add_line(x2, y1, x2, y2)
     end
 
-    def bucket_fill_area(x, y, c); end
+    def bucket_fill_area(x, y, c)
+      
+      if ( x >= 1 && x <= @width) && (y >= 1 && y <= @height )
+        base_position = get_position(x, y)
+      
+        if base_position[:v] == nil
+          # Change the nil value to c
+          base_position[:v] = set_color("b", :blue)
+
+          rows = [ base_position ]
+          
+          rows.each do |row|
+            if (row[:y] - 1) >= 1 # Top
+              top_position = get_position(row[:x], row[:y]-1)
+              rows << top_position if top_position[:v] == nil
+              # Change the nil value to c
+              top_position[:v] = set_color("b", :blue) if top_position[:v] == nil
+            end
+
+            if (row[:x] + 1) <= @width
+              right_position = get_position(row[:x]+1, row[:y])
+              rows << right_position if right_position[:v] == nil
+              # Change the nil value to c
+              right_position[:v] = set_color("b", :blue) if right_position[:v] == nil
+            end
+
+            if (row[:y] + 1) <= @height
+              bottom_position = get_position(row[:x], row[:y]+1)
+              rows << bottom_position if bottom_position[:v] == nil
+              # Change the nil value to c
+              bottom_position[:v] = set_color("b", :blue) if bottom_position[:v] == nil
+            end
+
+            if (row[:x] - 1) >= 1
+              left_position = get_position(row[:x]-1, row[:y])
+              rows << left_position if left_position[:v] == nil
+              # Change the nil value to c
+              left_position[:v] = set_color("b", :blue) if left_position[:v] == nil
+            end
+          end
+        end
+      end
+    end
+
+    def bucket_fill_position(x, y, c)
+      get_position(x, y)[:v] = c
+    end
+
+    def draw_position(x, y)
+      # Get the position and add the key :v
+      get_position(x, y)[:v] = 'x'
+    end
 
     def draw
       # Prints canvas dimensions
@@ -84,8 +137,7 @@ module DrawingTool
 
       # Prints bottom margin of the canvas
       (@width+2).times { print '-' }
-      puts
-      puts "\nDimensions: width: #{@width} x height: #{@height}"
+      print "\n[ W: #{@width} x H: #{@height} ]\n"
     end
 
     # Add a new line to the canvas with the given

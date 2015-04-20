@@ -3,7 +3,6 @@ require 'drawing_tool/canvas'
 
 require 'thor'
 require 'terminal-table'
-require 'byebug'
 
 module DrawingTool
   class Cli < Thor

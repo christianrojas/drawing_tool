@@ -1,5 +1,3 @@
-require 'byebug'
-
 module DrawingTool
   #
   # Class Canvas provides provides functionality to all 
@@ -8,6 +6,11 @@ module DrawingTool
   # @author Christian Rojas <christianrojasgar@gmail.com>
   #
   class Canvas
+    #
+    # @!attribute [rw] positions
+    #   @return [Array] with all canvas positions
+    attr_accessor :positions
+
     # Initialize a canvas object
     #
     # @param width [Integer] of the canvas
@@ -26,14 +29,15 @@ module DrawingTool
       end
     end
 
+    #
     # Add a new line to the canvas with the given
     # positions
     # 
-    # @param x1 [Integer]
-    # @param y1 [Integer]
-    # @param x2 [Integer]
-    # @param y2 [Integer]
-    # TODO: Refactoring
+    # @param x1 [Integer] x1 position
+    # @param y1 [Integer] y1 position
+    # @param x2 [Integer] x2 position
+    # @param y2 [Integer] y2 position
+    #
     def add_line(x1, y1, x2, y2)
       if y1 == y2
         if x1 < x2 # left -> right
@@ -52,6 +56,16 @@ module DrawingTool
       end
     end
 
+    #
+    # Add a new rectngle in the canvas
+    #
+    # @param [Integer] x1 position
+    # @param [Integer] y1 position
+    # @param [Integer] x2 position
+    # @param [Integer] y2 position
+    #
+    # @return [void]
+    # 
     def add_rectangle(x1, y1, x2, y2)
       # Vertical lines
       add_line(x1, y1, x2, y1)
@@ -62,37 +76,57 @@ module DrawingTool
       add_line(x2, y1, x2, y2)
     end
 
+    #
+    # Bucket fill the entire area connected to the given position
+    #
+    # @param [Integer] x position
+    # @param [Integer] y position
+    # @param [String] c color character
+    #
+    # @return [void]
+    # 
     def bucket_fill_area(x, y, c)
-      @colour = c
+      @rows = []
       if (x >= 1 && x <= @width) && (y >= 1 && y <= @height)
-        base_position = get_position(x, y)
-      
-        if base_position[:v].nil?
-          base_position[:v] = @colour
+        process_position(x, y, c)
 
-          @rows = [base_position]
-          @rows.each do |row|
-            position(row[:x], row[:y] - 1) if (row[:y] - 1) >= 1
-            position(row[:x] + 1, row[:y]) if (row[:x] + 1) <= @width
-            position(row[:x], row[:y] + 1) if (row[:y] + 1) <= @height
-            position(row[:x] - 1, row[:y]) if (row[:x] - 1) >= 1
-          end
+        @rows.each do |row|
+          process_position(row[:x], row[:y] - 1, c) if (row[:y] - 1) >= 1
+          process_position(row[:x] + 1, row[:y], c) if (row[:x] + 1) <= @width
+          process_position(row[:x], row[:y] + 1, c) if (row[:y] + 1) <= @height
+          process_position(row[:x] - 1, row[:y], c) if (row[:x] - 1) >= 1
         end
       end
     end
 
-    def position(x, y)
+    #
+    # Analize and process the if the position is connected
+    #
+    # @param [Integer] x position
+    # @param [Integer] y position
+    # @param [String] c color character
+    #
+    # @return [void]
+    # 
+    def process_position(x, y, c)
       position = get_position(x, y)
       if position[:v].nil?
         @rows << position 
-        position[:v] = @colour # Change the nil value to c
+        colour_position(position, c)
       end
     end
 
-    def bucket_fill_position(x, y, c)
-      get_position(x, y)[:v] = c
+    #
+    # Draw a colour character in the given position.
+    #
+    # @param [Hash] position
+    # @param [<String>] colour_char character
+    #
+    # @return [void]
+    # 
+    def colour_position(position, colour_char)
+      position[:v] = colour_char
     end
-
 
     #
     # Draw an 'x' in the given positions
@@ -103,12 +137,16 @@ module DrawingTool
     # @return [void]
     # 
     def draw_position(x, y)
-      # Get the position and add the key :v
       get_position(x, y)[:v] = 'x'
     end
 
+    #
+    # Draw the entire canvas in the terminal
+    #
+    #
+    # @return [void]
+    # 
     def draw
-
       # Prints canvas dimensions
       puts "\nCanvas"
 
@@ -138,6 +176,7 @@ module DrawingTool
       print "\n[ W: #{@width} x H: #{@height} ]\n"
     end
 
+    #
     # Add a new line to the canvas with the given
     # positions
     # 
